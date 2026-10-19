@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+/* ---------- Design tokens: light by default, dark via OS or explicit toggle ---------- */
+:root {
+  color-scheme: light;
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #efede7;
+  --border: #e4e1d8;
+  --text: #17181c;
+  --muted: #62646d;
+  --accent: #4338ca;
+  --accent-soft: #e8e7fb;
+  --accent-contrast: #ffffff;
+  --open: #0f7b4f;
+  --open-soft: #dcf3e8;
+  --upcoming: #9a5b00;
+  --upcoming-soft: #fdeccb;
+  --closed: #5b5f6b;
+  --closed-soft: #e7e8ec;
+  --danger: #b42318;
+  --danger-soft: #fde4e1;
+  --shadow: 0 1px 2px rgb(23 24 28 / 0.05), 0 8px 24px -12px rgb(23 24 28 / 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e0f13;
+    --surface: #17181e;
+    --surface-2: #1f2027;
+    --border: #2b2d36;
+    --text: #ecedf1;
+    --muted: #a0a3ae;
+    --accent: #a5a2ff;
+    --accent-soft: #25244a;
+    --accent-contrast: #0e0f13;
+    --open: #4fd1a0;
+    --open-soft: #11302a;
+    --upcoming: #f2b45a;
+    --upcoming-soft: #3a2a0e;
+    --closed: #a0a3ae;
+    --closed-soft: #25272f;
+    --danger: #ff8a7d;
+    --danger-soft: #3b1713;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e0f13;
+  --surface: #17181e;
+  --surface-2: #1f2027;
+  --border: #2b2d36;
+  --text: #ecedf1;
+  --muted: #a0a3ae;
+  --accent: #a5a2ff;
+  --accent-soft: #25244a;
+  --accent-contrast: #0e0f13;
+  --open: #4fd1a0;
+  --open-soft: #11302a;
+  --upcoming: #f2b45a;
+  --upcoming-soft: #3a2a0e;
+  --closed: #a0a3ae;
+  --closed-soft: #25272f;
+  --danger: #ff8a7d;
+  --danger-soft: #3b1713;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-open: var(--open);
+  --color-open-soft: var(--open-soft);
+  --color-upcoming: var(--upcoming);
+  --color-upcoming-soft: var(--upcoming-soft);
+  --color-closed: var(--closed);
+  --color-closed-soft: var(--closed-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  background: var(--bg);
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.5rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.btn:hover {
+  background: var(--surface-2);
+}
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.btn-primary:hover {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+.field {
+  width: 100%;
+  border-radius: 0.7rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.lift {
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2), var(--border), var(--surface-2));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 0.75rem;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .lift:hover {
+    transform: none;
+  }
+}
