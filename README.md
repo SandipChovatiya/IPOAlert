@@ -50,5 +50,3 @@ npm run agents                 # keep running: daily scheduler (separate process
 ## Checks
 
 `npm run typecheck` · `npm run lint` · `npm test` · `npm run build`
-
-updated 26-10-2026
