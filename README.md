@@ -14,22 +14,22 @@ npm run agents                 # keep running: daily scheduler (separate process
 
 `.env.local`
 
-| Variable | Purpose |
-| --- | --- |
-| `IPOALERTS_API_KEY` | optional — adds company description, strengths, risks, logo (free plan: open IPOs only) |
-| `IPOALERTS_ENRICH` | set `off` to ignore the key and use NSE only |
-| `NSE_HISTORY_DAYS` | closed/listed history kept (default 180) |
-| `IPOALERTS_PLAN` / `IPOALERTS_DAILY_BUDGET` | optional ipoalerts pacing (free by default, 22 calls/day) |
-| `ANTHROPIC_API_KEY` | optional — enables AI summaries |
-| `AI_DAILY_CAP` / `ANTHROPIC_MODEL` | optional — summaries per day (15) / model (`claude-sonnet-5-5`) |
+| Variable                                    | Purpose                                                                                 |
+| ------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `IPOALERTS_API_KEY`                         | optional — adds company description, strengths, risks, logo (free plan: open IPOs only) |
+| `IPOALERTS_ENRICH`                          | set `off` to ignore the key and use NSE only                                            |
+| `NSE_HISTORY_DAYS`                          | closed/listed history kept (default 180)                                                |
+| `IPOALERTS_PLAN` / `IPOALERTS_DAILY_BUDGET` | optional ipoalerts pacing (free by default, 22 calls/day)                               |
+| `ANTHROPIC_API_KEY`                         | optional — enables AI summaries                                                         |
+| `AI_DAILY_CAP` / `ANTHROPIC_MODEL`          | optional — summaries per day (15) / model (`claude-sonnet-5-5`)                         |
 
 ## Agents (`agents/`)
 
-| Agent | What it does | Run once |
-| --- | --- | --- |
-| sync | Pulls current, upcoming and recent past IPOs from NSE's public listings (3 small requests), validates with Zod, upserts, records subscription snapshots. If an ipoalerts key is set it also enriches open IPOs | `npm run agent:sync` |
-| status | Advances archived IPOs by date (open → closed → listed), prunes old data | `npm run agent:status` |
-| summarize | Claude writes a short plain-English summary per IPO (capped per day) | `npm run agent:summarize` |
+| Agent     | What it does                                                                                                                                                                                                   | Run once                  |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| sync      | Pulls current, upcoming and recent past IPOs from NSE's public listings (3 small requests), validates with Zod, upserts, records subscription snapshots. If an ipoalerts key is set it also enriches open IPOs | `npm run agent:sync`      |
+| status    | Advances archived IPOs by date (open → closed → listed), prunes old data                                                                                                                                       | `npm run agent:status`    |
+| summarize | Claude writes a short plain-English summary per IPO (capped per day)                                                                                                                                           | `npm run agent:summarize` |
 
 `npm run agents` runs them on a schedule (IST): 09:00, 13:00, 17:30 (sync → status → summarize) and 00:10 (status). Every run is logged in the `agent_runs` table.
 
