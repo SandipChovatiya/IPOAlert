@@ -77,7 +77,8 @@ try {
         git commit -m "Daily update: $date"
         Log "committed: Daily update: $date"
     } else {
-        Log "no changes to commit"
+        git commit --allow-empty -m "Daily update: $date (no changes)"
+        Log "committed (empty): Daily update: $date"
     }
 
     git push origin main
