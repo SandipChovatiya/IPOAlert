@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { computeStatus, daysBetween, tabFor } from "../src/lib/status";
 import { apiIpoSchema, listQuerySchema, slugListSchema } from "../src/lib/schemas";
-import { fmtPriceBand, parsePriceBand } from "../src/lib/format";
+import { fmtPriceBand, fmtReturn, parsePriceBand, returnSinceIssue } from "../src/lib/format";
+
+describe("return since issue", () => {
+  it("measures CMP against the top of the band", () => {
+    expect(returnSinceIssue(110, "95-100")).toBeCloseTo(10);
+    expect(fmtReturn(returnSinceIssue(90, "95-100"))).toBe("-10.00%");
+    expect(fmtReturn(returnSinceIssue(105, "100-100"))).toBe("+5.00%");
+  });
+  it("is unknown without a price or band", () => {
+    expect(returnSinceIssue(null, "95-100")).toBeNull();
+    expect(returnSinceIssue(100, null)).toBeNull();
+    expect(fmtReturn(null)).toBe("—");
+  });
+});
 
 describe("status", () => {
   const ipo = { startDate: "2026-10-05", endDate: "2026-10-08", listingDate: "2026-10-13" };

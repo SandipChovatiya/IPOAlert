@@ -33,6 +33,17 @@ export function fmtPriceBand(s?: string | null): string {
   return b.min === b.max ? `₹${b.max}` : `₹${b.min} – ₹${b.max}`;
 }
 
+/** Percent change of the current price over the issue price (top of the band); null if unknown. */
+export function returnSinceIssue(cmp?: number | null, priceRange?: string | null): number | null {
+  const band = parsePriceBand(priceRange);
+  if (cmp == null || !band || band.max <= 0) return null;
+  return ((cmp - band.max) / band.max) * 100;
+}
+
+export function fmtReturn(pct: number | null): string {
+  return pct == null ? "—" : `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+}
+
 export function fmtIssueSize(s?: string | null): string {
   if (!s) return "—";
   const m = s.trim().match(/^([\d.,]+)\s*(cr|crore|l|lakh)?/i);

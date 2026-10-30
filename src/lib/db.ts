@@ -81,6 +81,12 @@ const SCHEMA = [
   )`,
 ];
 
+/** Columns added after the first release of the table. */
+const ADDED_COLUMNS: [string, string][] = [
+  ["cmp", "REAL"],
+  ["cmp_updated_at", "TEXT"],
+];
+
 /** Returns the shared client after making sure the schema exists. */
 export async function db(): Promise<Client> {
   const c = getClient();
@@ -89,6 +95,11 @@ export async function db(): Promise<Client> {
       await c.execute("PRAGMA journal_mode = WAL");
       await c.execute("PRAGMA busy_timeout = 5000");
       for (const sql of SCHEMA) await c.execute(sql);
+      // CREATE TABLE IF NOT EXISTS won't add columns to an existing table, so add them one by one.
+      const cols = new Set((await c.execute("PRAGMA table_info(ipos)")).rows.map((r) => String(r.name)));
+      for (const [name, type] of ADDED_COLUMNS) {
+        if (!cols.has(name)) await c.execute(`ALTER TABLE ipos ADD COLUMN ${name} ${type}`);
+      }
     })();
   }
   await globalForDb.__ipoDbReady;
@@ -110,6 +121,8 @@ export interface Ipo {
   listingDate: string | null;
   priceRange: string | null;
   listingGain: string | null;
+  cmp: number | null;
+  cmpUpdatedAt: string | null;
   minQty: number | null;
   minAmount: number | null;
   issueSize: string | null;
@@ -153,6 +166,8 @@ export function rowToIpo(r: Record<string, any>): Ipo {
     listingDate: r.listing_date ?? null,
     priceRange: r.price_range ?? null,
     listingGain: r.listing_gain ?? null,
+    cmp: r.cmp == null ? null : Number(r.cmp),
+    cmpUpdatedAt: r.cmp_updated_at ?? null,
     minQty: r.min_qty == null ? null : Number(r.min_qty),
     minAmount: r.min_amount == null ? null : Number(r.min_amount),
     issueSize: r.issue_size ?? null,
@@ -256,6 +271,24 @@ export async function upsertNseIpo(ipo: ApiIpo, now = new Date().toISOString()):
     });
   }
   return false;
+}
+
+/** Listed equity IPOs (not debt) that are recent enough to be worth quoting. */
+export async function listedIposForQuote(): Promise<{ id: string; symbol: string }[]> {
+  const c = await db();
+  const days = Number(process.env.LISTED_QUOTE_DAYS) || 365;
+  const r = await c.execute({
+    sql: `SELECT id, symbol FROM ipos
+          WHERE status = 'listed' AND COALESCE(type, 'EQ') != 'DEBT'
+            AND (listing_date IS NULL OR listing_date >= date('now', ?))`,
+    args: [`-${days} days`],
+  });
+  return r.rows.map((x) => ({ id: String(x.id), symbol: String(x.symbol) }));
+}
+
+export async function updateCmp(id: string, price: number, now = new Date().toISOString()) {
+  const c = await db();
+  await c.execute({ sql: "UPDATE ipos SET cmp = ?, cmp_updated_at = ? WHERE id = ?", args: [price, now, id] });
 }
 
 export async function logRun(agent: string, fn: () => Promise<{ items: number; message?: string }>) {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Ipo } from "@/lib/db";
-import { fmtDate, fmtIssueSize, fmtPriceBand, inr, timing } from "@/lib/format";
+import { fmtDate, fmtIssueSize, fmtPriceBand, fmtReturn, inr, returnSinceIssue, timing } from "@/lib/format";
 import { StatusBadge, TypeBadge } from "./Badges";
 import CompanyLogo from "./CompanyLogo";
 import WatchButton from "./WatchButton";
@@ -66,6 +66,13 @@ export default function IpoCard({ ipo }: { ipo: Ipo }) {
       {ipo.status === "listed" && ipo.listingGain ? (
         <p className="text-sm">
           Listing gain: <strong>{ipo.listingGain}</strong>
+        </p>
+      ) : null}
+
+      {ipo.status === "listed" && ipo.cmp != null ? (
+        <p className="text-sm">
+          CMP: <strong>₹{ipo.cmp.toLocaleString("en-IN")}</strong>{" "}
+          <span className="text-muted">({fmtReturn(returnSinceIssue(ipo.cmp, ipo.priceRange))} vs issue)</span>
         </p>
       ) : null}
     </article>

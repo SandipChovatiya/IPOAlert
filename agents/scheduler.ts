@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { runSync } from "./sync";
 import { runStatus } from "./status";
 import { runSummarize } from "./summarize";
+import { runQuotes } from "./quotes";
 import { lastSync } from "../src/lib/db";
 
 const tz = "Asia/Kolkata";
@@ -15,6 +16,7 @@ async function pipeline(label: string) {
   try {
     console.log(`[${label}] sync`, await runSync().catch(errMsg));
     console.log(`[${label}] status`, await runStatus().catch(errMsg));
+    console.log(`[${label}] quotes`, await runQuotes().catch(errMsg));
     console.log(`[${label}] summarize`, await runSummarize().catch(errMsg));
   } finally {
     busy = false;
@@ -28,7 +30,10 @@ cron.schedule("30 17 * * *", () => void pipeline("17:30"), { timezone: tz });
 // Date-based status roll-over shortly after midnight.
 cron.schedule("10 0 * * *", () => void runStatus().then((r) => console.log("[00:10] status", r)), { timezone: tz });
 
-console.log("IPO agents scheduled (IST): 09:00, 13:00, 17:30 pipeline; 00:10 status roll-over");
+// Closing prices after the NSE session (15:30 IST), weekdays only.
+cron.schedule("45 15 * * 1-5", () => void runQuotes().then((r) => console.log("[15:45] quotes", r)), { timezone: tz });
+
+console.log("IPO agents scheduled (IST): 09:00, 13:00, 17:30 pipeline; 15:45 weekday quotes; 00:10 status roll-over");
 
 // Catch up on start if the last successful sync is older than 12h.
 void lastSync().then((s) => {

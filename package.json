@@ -10,6 +10,7 @@
     "agents": "tsx --env-file=.env.local agents/scheduler.ts",
     "agent:sync": "tsx --env-file=.env.local agents/run.ts sync",
     "agent:status": "tsx --env-file=.env.local agents/run.ts status",
+    "agent:quotes": "tsx --env-file=.env.local agents/run.ts quotes",
     "agent:summarize": "tsx --env-file=.env.local agents/run.ts summarize",
     "agent:all": "tsx --env-file=.env.local agents/run.ts all",
     "test": "vitest run",

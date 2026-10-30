@@ -156,6 +156,19 @@ export async function fetchNseIpos(): Promise<{ ipos: ApiIpo[]; skipped: number 
   return { ipos: [...out.values()], skipped };
 }
 
+const quoteSchema = z.object({ priceInfo: z.object({ lastPrice: z.number().positive().finite() }) });
+
+/** Last traded price for a listed symbol, or null when NSE has no quote for it. */
+export async function fetchNseQuote(symbol: string): Promise<number | null> {
+  try {
+    const p = quoteSchema.safeParse(await getJson(`/api/quote-equity?symbol=${encodeURIComponent(symbol)}`));
+    return p.success ? p.data.priceInfo.lastPrice : null;
+  } catch (e) {
+    if (e instanceof Error && /NSE responded 404/.test(e.message)) return null;
+    throw e;
+  }
+}
+
 function parsePrice(c: z.infer<typeof pastRow>) {
   return parseNsePrice(c.priceRange) ?? parseNsePrice(c.issuePrice);
 }

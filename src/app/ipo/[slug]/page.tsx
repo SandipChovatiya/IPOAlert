@@ -7,7 +7,7 @@ import CompanyLogo from "@/components/CompanyLogo";
 import SubscriptionChart from "@/components/SubscriptionChart";
 import WatchButton from "@/components/WatchButton";
 import { getIpoBySlug, subscriptionHistory } from "@/lib/db";
-import { fmtDate, fmtIssueSize, fmtPriceBand, inr, parsePriceBand, timing } from "@/lib/format";
+import { fmtDate, fmtIssueSize, fmtPriceBand, fmtReturn, inr, parsePriceBand, returnSinceIssue, timing } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -78,7 +78,16 @@ export default async function IpoPage({ params }: Props) {
         <Fact label="Closes" value={fmtDate(ipo.endDate)} />
         <Fact label="Listing" value={fmtDate(ipo.listingDate)} />
         <Fact label="Listing gain" value={ipo.listingGain || "—"} />
+        {ipo.status === "listed" ? (
+          <>
+            <Fact label="Current price" value={ipo.cmp != null ? `₹${ipo.cmp.toLocaleString("en-IN")}` : "—"} />
+            <Fact label="Return vs issue" value={fmtReturn(returnSinceIssue(ipo.cmp, ipo.priceRange))} />
+          </>
+        ) : null}
       </dl>
+      {ipo.status === "listed" && ipo.cmpUpdatedAt ? (
+        <p className="-mt-6 text-xs text-muted">Price as of {fmtDate(ipo.cmpUpdatedAt.slice(0, 10))}, from NSE. Return is measured against the top of the price band.</p>
+      ) : null}
 
       {ipo.aiSummary ? (
         <section className="card border-l-4 p-5" style={{ borderLeftColor: "var(--accent)" }}>
